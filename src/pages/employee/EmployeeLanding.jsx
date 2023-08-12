@@ -9,8 +9,12 @@ import {
   Container,
   Flex,
   HStack,
-  List,
-  ListItem,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
 } from "@chakra-ui/react";
 import NavbarEmployee from "../../components/NavbarEmployee";
 import SidebarEmployee from "../../components/SidebarEmployee";
@@ -23,7 +27,8 @@ const EmployeeLanding = () => {
   const [clockOutTime, setClockOutTime] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [attendanceHistory, setAttendanceHistory] = useState([]);
-  const [userId, setUserId] = useState(""); // Initialize with an empty string
+  const [userId, setUserId] = useState("");
+  const [isClockInDisabled, setIsClockInDisabled] = useState(false);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -36,14 +41,26 @@ const EmployeeLanding = () => {
   }, []);
 
   useEffect(() => {
-    // Fetch user data and set the userId state here, after authentication or login
-    const token = localStorage.getItem("token"); // Retrieve the JWT token from local storage
+    const token = localStorage.getItem("token");
     if (token) {
       const decodedToken = jwtDecode(token);
-      setUserId(decodedToken.id); // Set the userID from the decoded token
-      fetchAttendanceHistory(); // Fetch attendance history once userId is set
+      setUserId(decodedToken.id);
+      fetchAttendanceHistory();
     }
-  }, []); // This effect will run whenever userId changes
+  }, [userId]);
+
+  useEffect(() => {
+    // Check if clocked in
+    const userIsClockedIn = attendanceHistory.some((entry) => !entry.ClockOut);
+    setClockedIn(userIsClockedIn);
+
+    // Check if clocked out
+    const userIsClockedOut = attendanceHistory.some((entry) => entry.ClockOut);
+    setClockedOut(userIsClockedOut);
+
+    // Disable Clock In button if clocked in
+    setIsClockInDisabled(userIsClockedIn);
+  }, [attendanceHistory]);
 
   const fetchAttendanceHistory = async () => {
     try {
@@ -66,12 +83,12 @@ const EmployeeLanding = () => {
       );
 
       if (response.status === 200) {
-        setClockedIn(true);
         setClockInTime(new Date());
         alert("Clock In Successful");
         fetchAttendanceHistory();
       }
     } catch (error) {
+      alert("Clock in Failed, because already clocked in");
       console.error("Error:", error);
     }
   };
@@ -86,7 +103,6 @@ const EmployeeLanding = () => {
       );
 
       if (response.status === 200) {
-        setClockedOut(true);
         setClockOutTime(new Date());
         alert("Clock Out Successful");
         fetchAttendanceHistory();
@@ -96,53 +112,75 @@ const EmployeeLanding = () => {
     }
   };
 
+
   return (
-    <Box>
+    <Box bg="gray.100" minHeight="100vh">
       <NavbarEmployee />
       <Container maxW="100%">
         <Flex pt={"60px"} flexDirection={"row"}>
-          <Box minW={"20%"}>
+          <Box w={"20%"} bg="white" p={4}>
             <SidebarEmployee />
           </Box>
-          <Box minW={"80%"}>
-            <VStack p={6} align="stretch">
+          <Box w={"80%"} bg="white" p={6}>
+            <VStack align="stretch">
               <Heading size="lg" mb={4}>
                 Employee Attendance
               </Heading>
-              <Text>Current Time: {currentTime.toLocaleTimeString()}</Text>
+              <Text fontSize="lg">
+                Current Time: {currentTime.toLocaleTimeString()}
+              </Text>
               <HStack mt={4} spacing={4}>
-                {!clockedIn && (
-                  <Button onClick={handleClockIn} colorScheme="green">
-                    Clock In
-                  </Button>
-                )}
-                {!clockedOut && (
-                  <Button onClick={handleClockOut} colorScheme="red">
-                    Clock Out
-                  </Button>
-                )}
+                <Button
+                  onClick={handleClockIn}
+                  colorScheme="green"
+                  disabled={isClockInDisabled}
+                >
+                  Clock In
+                </Button>
+                <Button
+                  onClick={handleClockOut}
+                  colorScheme="red"
+                  disabled={!isClockInDisabled}
+                >
+                  Clock Out
+                </Button>
               </HStack>
-              {clockedIn && clockedOut && (
-                <Box mt={4}>
-                  <Text color="green.500">Attendance Recorded</Text>
+              {clockedIn && clockedOut && clockInTime && clockOutTime && (
+                <VStack mt={4} spacing={2}>
+                  <Text color="green.500" fontWeight="bold">
+                    Attendance Recorded
+                  </Text>
                   <Text>Clock In Time: {clockInTime.toLocaleString()}</Text>
                   <Text>Clock Out Time: {clockOutTime.toLocaleString()}</Text>
-                </Box>
+                </VStack>
               )}
               <Box mt={4}>
                 <Heading size="md" mb={2}>
                   Attendance History
                 </Heading>
-                <List>
-                  {attendanceHistory.map((entry) => (
-                    <ListItem key={entry.id}>
-                      Clock In: {new Date(entry.ClockIn).toLocaleString()} |
-                      Clock Out: {new Date(entry.ClockOut).toLocaleString()} |
-                      Hourly Rate: {entry.HourlyRate} |
-                      Day Salary: {entry.DaySalary}
-                    </ListItem>
-                  ))}
-                </List>
+                <Table variant="striped" colorScheme="gray">
+                  <Thead>
+                    <Tr>
+                      <Th>Clock In</Th>
+                      <Th>Clock Out</Th>
+                      <Th>Hourly Work</Th>
+                      <Th>Day Salary</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {attendanceHistory
+                      .slice()
+                      .sort((a, b) => new Date(b.ClockIn) - new Date(a.ClockIn))
+                      .map((entry) => (
+                        <Tr key={entry.id}>
+                          <Td>{new Date(entry.ClockIn).toLocaleString()}</Td>
+                          <Td>{new Date(entry.ClockOut).toLocaleString()}</Td>
+                          <Td>{entry.HourlyWorks.toFixed(4)} Hour</Td>
+                          <Td>Rp {entry.DaySalary}</Td>
+                        </Tr>
+                      ))}
+                  </Tbody>
+                </Table>
               </Box>
             </VStack>
           </Box>
