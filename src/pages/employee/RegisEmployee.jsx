@@ -10,12 +10,12 @@ import {
   Input,
   Button,
   Text,
+  Center,
 } from "@chakra-ui/react";
-import { unstable_HistoryRouter, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const RegisEmployee = () => {
   const { token } = useParams();
-//   const history = useHistory()
   const [fullname, setFullname] = useState("");
   const [birthday, setBirthday] = useState("");
   const [username, setUsername] = useState("");
@@ -41,7 +41,7 @@ const RegisEmployee = () => {
         }
       );
       if (response.status === 200) {
-        navigate("/"); // Menggunakan prop redirectToLogin untuk mengalihkan halaman
+        navigate("/"); // Redirect to homepage after successful registration
       }
     } catch (error) {
       setError("An error occurred. Please try again.");
@@ -49,11 +49,17 @@ const RegisEmployee = () => {
   };
 
   return (
-    <Box bg="gray.100" minHeight="100vh">
-      <Container maxW="xl">
-        <VStack p={6} spacing={4} align="stretch">
-          <Heading size="lg">Register Lanjutan</Heading>
-          <Text>Please complete your registration.</Text>
+    <Center h="100vh" bg="gray.300">
+      <Box
+        w={{ base: "90%", sm: "80%", md: "60%", lg: "40%" }}
+        p={6}
+        bg="white"
+        boxShadow="xl"
+        borderRadius="3xl"
+      >
+        <VStack spacing={4} align="stretch">
+          <Heading size="lg">Complete Your Registration</Heading>
+          <Text>Please provide your information below.</Text>
           <form onSubmit={handleSubmit}>
             <FormControl id="fullname">
               <FormLabel>Full Name</FormLabel>
@@ -92,13 +98,13 @@ const RegisEmployee = () => {
               />
             </FormControl>
             {error && <Text color="red">{error}</Text>}
-            <Button type="submit" colorScheme="blue">
+            <Button mt={5} type="submit" colorScheme="blue">
               Register
             </Button>
           </form>
         </VStack>
-      </Container>
-    </Box>
+      </Box>
+    </Center>
   );
 };
 

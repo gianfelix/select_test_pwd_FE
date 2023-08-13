@@ -116,12 +116,12 @@ const EmployeeLanding = () => {
   return (
     <Box bg="gray.100" minHeight="100vh">
       <NavbarEmployee />
-      <Container maxW="100%">
+      <Container px={0} maxW="100%">
         <Flex pt={"60px"} flexDirection={"row"}>
-          <Box w={"20%"} bg="white" p={4}>
+          <Box  bg="white" >
             <SidebarEmployee />
           </Box>
-          <Box w={"80%"} bg="white" p={6}>
+          <Box w={"100%"} bg="white" p={6}>
             <VStack align="stretch">
               <Heading size="lg" mb={4}>
                 Employee Attendance
@@ -165,6 +165,8 @@ const EmployeeLanding = () => {
                       <Th>Clock Out</Th>
                       <Th>Hourly Work</Th>
                       <Th>Day Salary</Th>
+                      <Th>Deduction</Th>
+                      <Th>Month</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -177,6 +179,8 @@ const EmployeeLanding = () => {
                           <Td>{new Date(entry.ClockOut).toLocaleString()}</Td>
                           <Td>{entry.HourlyWorks.toFixed(4)} Hour</Td>
                           <Td>Rp {entry.DaySalary}</Td>
+                          <Td>Rp {entry.Deduction}</Td>
+                          <Td>{entry.Month}</Td>
                         </Tr>
                       ))}
                   </Tbody>

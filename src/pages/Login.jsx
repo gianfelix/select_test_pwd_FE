@@ -6,6 +6,8 @@ import {
   FormLabel,
   Input,
   Button,
+  Center,
+  Text,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -20,18 +22,19 @@ function Login() {
   const dispatch = useDispatch();
   const handleLogin = async (e) => {
     e.preventDefault();
-  
+
     try {
       const response = await axios.post("http://localhost:8000/api/login", {
         email,
         password,
       });
-  
+
       if (response.status === 200) {
         dispatch(loginSuccess(response.data.token));
-        if (response.data.user.roleID === 1) {
-          navigate("/employee");
-        } else if (response.data.user.roleID === 2) {
+        if (
+          response.data.user.roleID === 1 ||
+          response.data.user.roleID === 2
+        ) {
           navigate("/employee");
         } else if (response.data.user.roleID === 3) {
           navigate("/admin");
@@ -46,45 +49,51 @@ function Login() {
   };
 
   return (
-    <Box
-      p={4}
-      bg="gray.100"
-      borderRadius="lg"
-      boxShadow="md"
-      w={{ base: "90%", md: "50%" }}
-      h={"100%"}
-      mt={{ base: 15, md: 10 }}
-      mx={"auto"}
-    >
-      <Box p={6}>
-        <Heading as="h2" size="lg" mb={4}>
-          Login
-        </Heading>
-        <form onSubmit={handleLogin}>
-          <FormControl id="email" mb={4}>
-            <FormLabel>Email</FormLabel>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </FormControl>
-          <FormControl id="password" mb={4}>
-            <FormLabel>Password</FormLabel>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </FormControl>
-          <Button type="submit" colorScheme="blue" w="100%">
+    <Center h="100vh" bg="gray.200">
+      <Box
+        p={4}
+        bg="white"
+        borderRadius="3xl"
+        boxShadow="2xl"
+        w={{ base: "90%", md: "50%" }}
+        h="auto"
+        mx="auto"
+      >
+        <Box p={6}>
+          <Heading as="h2" size="lg" mb={4}>
             Login
-          </Button>
-        </form>
+          </Heading>
+          <form onSubmit={handleLogin}>
+            <FormControl id="email" mb={4}>
+              <FormLabel>Email</FormLabel>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </FormControl>
+            <FormControl id="password" mb={4}>
+              <FormLabel>Password</FormLabel>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </FormControl>
+            <Button type="submit" colorScheme="blue" w="100%">
+              Login
+            </Button>
+          </form>
+        </Box>
+        <Center>
+          <Text fontSize="sm" color="gray.500">
+            © 2023 GFR Company. All rights reserved.
+          </Text>
+        </Center>
       </Box>
-    </Box>
+    </Center>
   );
 }
 

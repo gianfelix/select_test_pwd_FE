@@ -17,18 +17,46 @@ import Navbar from "../../components/Navbar";
 import Sidebar from "../../components/Sidebar";
 
 const AdminLanding = () => {
+  const navigate = useNavigate();
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track user login status
   const [email, setEmail] = useState("");
   const [roleID, setRoleID] = useState("");
   const [baseSalary, setBaseSalary] = useState("");
+  const [daySalary, setDaySalary] = useState("");
+
+  useEffect(() => {
+    // Check user's login status based on the token in local storage
+    const checkLoginStatus = () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        // You may also want to decode and verify the token here
+        setIsLoggedIn(true);
+      } else {
+        navigate("/"); // Redirect to login page if token is not found
+      }
+    };
+
+    checkLoginStatus();
+  }, [navigate]);
 
   const handleCreateEmployee = async () => {
     try {
       // Sending data to the backend
-      const response = await axios.post("http://localhost:8000/api/auth", {
-        email,
-        roleID,
-        baseSalary,
-      });
+      const response = await axios.post(
+        "http://localhost:8000/api/auth",
+        {
+          email,
+          roleID,
+          baseSalary,
+          daySalary,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       // Display success message
       alert(response.data.message);
@@ -37,6 +65,11 @@ const AdminLanding = () => {
       console.error("Error:", error);
     }
   };
+
+  if (!isLoggedIn) {
+    // If not logged in, show a loading message or an empty component
+    return <div>Loading...</div>;
+  }
 
   return (
     <Box>
@@ -77,6 +110,14 @@ const AdminLanding = () => {
                   type="number"
                   value={baseSalary}
                   onChange={(e) => setBaseSalary(e.target.value)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Day Salary</FormLabel>
+                <Input
+                  type="number"
+                  value={daySalary}
+                  onChange={(e) => setDaySalary(e.target.value)}
                 />
               </FormControl>
               <Button
