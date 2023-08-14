@@ -14,7 +14,7 @@ const SidebarEmployee = () => {
   const userID = decodedToken.id;
 
   return (
-    <Box w="200px" bg="gray.200" h="100vh" p={4}>
+    <Box w="200px" bg="gray.200" h="93.5vh" p={4}>
       <VStack spacing={2} align="stretch">
         <Link as={RouterLink} to="/employee" color="teal.500">
           Dashboard Employee

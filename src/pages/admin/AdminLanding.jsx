@@ -60,6 +60,7 @@ const AdminLanding = () => {
 
       // Display success message
       alert(response.data.message);
+      window.location.reload();
     } catch (error) {
       // Handle error
       console.error("Error:", error);
@@ -74,12 +75,12 @@ const AdminLanding = () => {
   return (
     <Box>
       <Navbar />
-      <Container maxW="100%">
+      <Container p={0} maxW="100%">
         <Flex pt={"60px"} flexDirection={"row"}>
-          <Box minW={"20%"}>
+          <Box >
             <Sidebar />
           </Box>
-          <Box minW={"80%"}>
+          <Box px={20} py={10} w={"full"}>
             <VStack pl={6} pt={5} spacing={6} align="stretch">
               <Heading size="lg" mb={4}>
                 Create New Employee

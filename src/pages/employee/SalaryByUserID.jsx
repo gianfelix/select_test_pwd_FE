@@ -5,14 +5,20 @@ import {
   Box,
   Heading,
   Text,
-  List,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
   Flex,
-  ListItem,
   Spinner,
   Alert,
   AlertIcon,
   Button,
+  Divider,
 } from "@chakra-ui/react";
+import { MdAttachMoney, MdDateRange } from "react-icons/md";
 import NavbarEmployee from "../../components/NavbarEmployee";
 import SidebarEmployee from "../../components/SidebarEmployee";
 
@@ -54,11 +60,36 @@ function SalaryByUserID() {
     fetchSalaryRecords();
   }, [userID]);
 
+  function getMonthName(month) {
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    return monthNames[month - 1];
+  }
+
+  // Format currency as IDR
+  function formatCurrency(amount) {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(amount);
+  }
+
   return (
     <Box>
-      <Box>
-        <NavbarEmployee />
-      </Box>
+      <NavbarEmployee />
       <Box pt={"60px"}>
         <Flex>
           <SidebarEmployee />
@@ -83,24 +114,28 @@ function SalaryByUserID() {
                     Error: {error}
                   </Alert>
                 ) : (
-                  <List spacing={3}>
-                    {salaryRecords.map((record) => (
-                      <ListItem
-                        key={record.id}
-                        bg="white"
-                        p={4}
-                        boxShadow="md"
-                        borderRadius="md"
-                      >
-                        <Text fontSize="lg" fontWeight="semibold" mb={2}>
-                          Total Salary: {record.TotalSalary}
-                        </Text>
-                        <Text>Total Deduction: {record.TotalDeduction}</Text>
-                        <Text>Month: {record.Month}</Text>
-                        <Text>Year: {record.Year}</Text>
-                      </ListItem>
-                    ))}
-                  </List>
+                  <Table variant="simple">
+                    <Thead>
+                      <Tr>
+                        <Th>Total Salary</Th>
+                        <Th>Total Deduction</Th>
+                        <Th>Month</Th>
+                        <Th>Year</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {salaryRecords.map((record) => (
+                        <Tr key={record.id}>
+                          <Td>
+                            {formatCurrency(record.TotalSalary)}
+                          </Td>
+                          <Td>{formatCurrency(record.TotalDeduction)}</Td>
+                          <Td>{getMonthName(record.Month)}</Td>
+                          <Td>{record.Year}</Td>
+                        </Tr>
+                      ))}
+                    </Tbody>
+                  </Table>
                 )}
               </Box>
             )}

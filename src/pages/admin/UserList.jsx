@@ -51,7 +51,7 @@ const UserList = () => {
         <Box>
           <Sidebar />
         </Box>
-        <Box flex="1" p={6} bg="white" boxShadow="md" rounded="md">
+        <Box px={20} py={10} w={"full"} flex="1"  bg="white" boxShadow="md" rounded="md">
           <Heading size="lg" mb={4}>
             User List
           </Heading>

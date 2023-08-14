@@ -44,6 +44,7 @@ const RegisEmployee = () => {
         navigate("/"); // Redirect to homepage after successful registration
       }
     } catch (error) {
+      alert("Link Expired, your data has been updated. For more information contact admin");
       setError("An error occurred. Please try again.");
     }
   };
