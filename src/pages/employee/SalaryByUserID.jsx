@@ -16,23 +16,28 @@ import {
   Alert,
   AlertIcon,
   Button,
-  Divider,
+  HStack,
 } from "@chakra-ui/react";
-import { MdAttachMoney, MdDateRange } from "react-icons/md";
 import NavbarEmployee from "../../components/NavbarEmployee";
 import SidebarEmployee from "../../components/SidebarEmployee";
 
 function SalaryByUserID() {
-  const { userID } = useParams(); // Get userID from the URL parameter
+  const { userID } = useParams();
   const [salaryRecords, setSalaryRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState("");
 
   const fetchSalaryRecords = async () => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/employee/salary/${userID}`
+        `http://localhost:8000/api/employee/salary/${userID}`,
+        {
+          params: {
+            Month: selectedMonth,
+          },
+        }
       );
       setSalaryRecords(response.data.salaryRecords);
     } catch (error) {
@@ -41,24 +46,9 @@ function SalaryByUserID() {
     setIsLoading(false);
   };
 
-  const calculateSalary = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.post(
-        `http://localhost:8000/api/employee/salary`,
-        { userID }
-      );
-      fetchSalaryRecords(); // Refresh the records after calculation
-      console.log(response.data.message);
-    } catch (error) {
-      setError(error.message);
-    }
-    setIsLoading(false);
-  };
-
   useEffect(() => {
     fetchSalaryRecords();
-  }, [userID]);
+  }, [userID, selectedMonth]);
 
   function getMonthName(month) {
     const monthNames = [
@@ -78,7 +68,6 @@ function SalaryByUserID() {
     return monthNames[month - 1];
   }
 
-  // Format currency as IDR
   function formatCurrency(amount) {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -97,11 +86,30 @@ function SalaryByUserID() {
             <Heading mb={4} fontSize="2xl">
               Salary Reports
             </Heading>
-            <Flex justifyContent="flex-end" mb={4}>
-              <Button onClick={calculateSalary} colorScheme="teal">
-                Calculate Salary
-              </Button>
-            </Flex>
+            <Box>
+              <Text mb={2}>Filter by Month:</Text>
+              <HStack spacing={2}>
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                >
+                  <option value="">All Months</option>
+                  <option value="1">January</option>
+                  <option value="2">February</option>
+                  <option value="3">March</option>
+                  <option value="4">April</option>
+                  <option value="5">May</option>
+                  <option value="6">June</option>
+                  <option value="7">July</option>
+                  <option value="8">August</option>
+                  <option value="9">September</option>
+                  <option value="10">October</option>
+                  <option value="11">November</option>
+                  <option value="12">December</option>
+                </select>
+                <Button onClick={fetchSalaryRecords}>Apply Filter</Button>
+              </HStack>
+            </Box>
             {isLoading ? (
               <Flex justifyContent="center" alignItems="center" height="300px">
                 <Spinner size="xl" />
@@ -126,9 +134,7 @@ function SalaryByUserID() {
                     <Tbody>
                       {salaryRecords.map((record) => (
                         <Tr key={record.id}>
-                          <Td>
-                            {formatCurrency(record.TotalSalary)}
-                          </Td>
+                          <Td>{formatCurrency(record.TotalSalary)}</Td>
                           <Td>{formatCurrency(record.TotalDeduction)}</Td>
                           <Td>{getMonthName(record.Month)}</Td>
                           <Td>{record.Year}</Td>
