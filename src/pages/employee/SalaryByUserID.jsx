@@ -16,8 +16,10 @@ import {
   Alert,
   AlertIcon,
   Button,
+  Divider,
   HStack,
 } from "@chakra-ui/react";
+import { MdAttachMoney, MdDateRange } from "react-icons/md";
 import NavbarEmployee from "../../components/NavbarEmployee";
 import SidebarEmployee from "../../components/SidebarEmployee";
 
@@ -26,7 +28,8 @@ function SalaryByUserID() {
   const [salaryRecords, setSalaryRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [selectedMonth, setSelectedMonth] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const fetchSalaryRecords = async () => {
     setIsLoading(true);
@@ -35,7 +38,8 @@ function SalaryByUserID() {
         `http://localhost:8000/api/employee/salary/${userID}`,
         {
           params: {
-            Month: selectedMonth,
+            month: startDate,
+            year: endDate,
           },
         }
       );
@@ -46,9 +50,24 @@ function SalaryByUserID() {
     setIsLoading(false);
   };
 
+  const calculateSalary = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        `http://localhost:8000/api/employee/salary`,
+        { userID }
+      );
+      fetchSalaryRecords();
+      console.log(response.data.message);
+    } catch (error) {
+      setError(error.message);
+    }
+    setIsLoading(false);
+  };
+
   useEffect(() => {
     fetchSalaryRecords();
-  }, [userID, selectedMonth]);
+  }, [userID, startDate, endDate]);
 
   function getMonthName(month) {
     const monthNames = [
@@ -76,6 +95,38 @@ function SalaryByUserID() {
     }).format(amount);
   }
 
+  const handleFilter = () => {
+    if (startDate && endDate) {
+      const startDateObject = new Date(startDate + "-01"); // Assuming YYYY-MM format
+      const endDateObject = new Date(endDate + "-01"); // Assuming YYYY-MM format
+  
+      return salaryRecords.filter((record) => {
+        const recordDate = new Date(record.Year, record.Month - 1, 1); // Create a Date object using Year and Month
+        return recordDate >= startDateObject && recordDate <= endDateObject;
+      });
+    } else if (startDate) {
+      const startDateObject = new Date(startDate + "-01"); // Assuming YYYY-MM format
+  
+      return salaryRecords.filter((record) => {
+        const recordDate = new Date(record.Year, record.Month - 1, 1);
+        return recordDate >= startDateObject;
+      });
+    } else if (endDate) {
+      const endDateObject = new Date(endDate + "-01"); // Assuming YYYY-MM format
+  
+      return salaryRecords.filter((record) => {
+        const recordDate = new Date(record.Year, record.Month - 1, 1);
+        return recordDate <= endDateObject;
+      });
+    } else {
+      return salaryRecords;
+    }
+  };
+  
+  
+
+  const filteredData = handleFilter();
+
   return (
     <Box>
       <NavbarEmployee />
@@ -87,29 +138,27 @@ function SalaryByUserID() {
               Salary Reports
             </Heading>
             <Box>
-              <Text mb={2}>Filter by Month:</Text>
+              <Text mb={2}>Filter by Date Range:</Text>
               <HStack spacing={2}>
-                <select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                >
-                  <option value="">All Months</option>
-                  <option value="1">January</option>
-                  <option value="2">February</option>
-                  <option value="3">March</option>
-                  <option value="4">April</option>
-                  <option value="5">May</option>
-                  <option value="6">June</option>
-                  <option value="7">July</option>
-                  <option value="8">August</option>
-                  <option value="9">September</option>
-                  <option value="10">October</option>
-                  <option value="11">November</option>
-                  <option value="12">December</option>
-                </select>
+                <input
+                  type="month"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+                <input
+                  type="month"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+                <Button onClick={() => { setStartDate(""); setEndDate(""); }}>Clear</Button>
                 <Button onClick={fetchSalaryRecords}>Apply Filter</Button>
               </HStack>
             </Box>
+            <Flex justifyContent="flex-end" mb={4}>
+              <Button onClick={calculateSalary} colorScheme="teal">
+                Calculate Salary
+              </Button>
+            </Flex>
             {isLoading ? (
               <Flex justifyContent="center" alignItems="center" height="300px">
                 <Spinner size="xl" />
@@ -132,9 +181,11 @@ function SalaryByUserID() {
                       </Tr>
                     </Thead>
                     <Tbody>
-                      {salaryRecords.map((record) => (
+                      {filteredData.map((record) => (
                         <Tr key={record.id}>
-                          <Td>{formatCurrency(record.TotalSalary)}</Td>
+                          <Td>
+                            {formatCurrency(record.TotalSalary)}
+                          </Td>
                           <Td>{formatCurrency(record.TotalDeduction)}</Td>
                           <Td>{getMonthName(record.Month)}</Td>
                           <Td>{record.Year}</Td>
@@ -145,7 +196,7 @@ function SalaryByUserID() {
                 )}
               </Box>
             )}
-          </Box>
+          </Box> 
         </Flex>
       </Box>
     </Box>
