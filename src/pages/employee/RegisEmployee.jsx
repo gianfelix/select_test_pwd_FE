@@ -27,7 +27,7 @@ const RegisEmployee = () => {
     e.preventDefault();
     try {
       const response = await axios.patch(
-        "http://localhost:8000/api/auth",
+        "https://enchanting-crab-pantsuit.cyclic.app/api/auth",
         {
           fullname,
           birthday,

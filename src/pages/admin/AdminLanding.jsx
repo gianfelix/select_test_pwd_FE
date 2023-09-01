@@ -44,7 +44,7 @@ const AdminLanding = () => {
     try {
       // Sending data to the backend
       const response = await axios.post(
-        "http://localhost:8000/api/auth",
+        "https://enchanting-crab-pantsuit.cyclic.app/api/auth",
         {
           email,
           roleID,

@@ -21,7 +21,7 @@ const UserList = () => {
   useEffect(() => {
     const fetchAllUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/auth");
+        const response = await axios.get("https://enchanting-crab-pantsuit.cyclic.app/api/auth");
         setUsers(response.data.users);
       } catch (error) {
         console.error("Error fetching users:", error);

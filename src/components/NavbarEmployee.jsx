@@ -27,7 +27,7 @@ import {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:8000/api/auth", {
+        const response = await axios.get("https://enchanting-crab-pantsuit.cyclic.app/api/auth", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -35,7 +35,7 @@ function SalaryByUserID() {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/employee/salary/${userID}`,
+        `https://enchanting-crab-pantsuit.cyclic.app/api/employee/salary/${userID}`,
         {
           params: {
             month: startDate,
@@ -54,7 +54,7 @@ function SalaryByUserID() {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        `http://localhost:8000/api/employee/salary`,
+        `https://enchanting-crab-pantsuit.cyclic.app/api/employee/salary`,
         { userID }
       );
       fetchSalaryRecords();

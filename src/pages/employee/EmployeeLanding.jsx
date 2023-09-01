@@ -66,7 +66,7 @@ const EmployeeLanding = () => {
   const fetchAttendanceHistory = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/employee/attendance-history/${userId}`
+        `https://enchanting-crab-pantsuit.cyclic.app/api/employee/attendance-history/${userId}`
       );
       setAttendanceHistory(response.data.history);
     } catch (error) {
@@ -77,7 +77,7 @@ const EmployeeLanding = () => {
   const handleClockIn = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/employee/clock-in",
+        "https://enchanting-crab-pantsuit.cyclic.app/api/employee/clock-in",
         {
           userID: userId,
         }
@@ -97,7 +97,7 @@ const EmployeeLanding = () => {
   const handleClockOut = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/employee/clock-out",
+        "https://enchanting-crab-pantsuit.cyclic.app/api/employee/clock-out",
         {
           userID: userId,
         }
